@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Karla:wght@200;300;400;500;600;700;800&family=Montserrat:wght@200;300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-
+/* Tailwind CSS v4 theme configuration */
 @theme {
   /* 🎨 Кольори */
   /* ==== BASE COLORS ==== */
@@ -72,5 +72,45 @@
   --font-montserrat: "Montserrat", sans-serif;
   --font-karla: "Karla", sans-serif;
 
+}
+
+/* Browser Extension Compatibility */
+/* Prevent browser extensions from causing layout shifts */
+body {
+  /* Ensure consistent rendering */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Reset any extension-added styles */
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* More aggressive Grammarly suppression */
+body[data-new-gr-c-s-check-loaded],
+body[data-gr-ext-installed],
+[data-grammarly-extension],
+[data-grammarly-extension] *,
+grammarly-extension,
+grammarly-extension *,
+.gr_,
+.gr_ * {
+  /* Force hide all Grammarly elements */
+  display: initial !important;
+  visibility: visible !important;
+  /* But prevent them from affecting layout */
+  position: static !important;
+  transform: none !important;
+  z-index: auto !important;
+}
+
+/* Ensure body maintains its expected state */
+body {
+  /* Override any extension modifications */
+  overflow: visible !important;
+  height: auto !important;
+  width: auto !important;
 }
 

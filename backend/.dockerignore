@@ -1,0 +1,54 @@
+# 📝 Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 🏗️ Build outputs
+dist/
+build/
+.next/
+
+# 🔧 Development files
+.env.local
+.env.development
+.env.test
+*.log
+
+# 🧪 Testing
+coverage/
+.nyc_output/
+
+# 📝 Documentation
+*.md
+docs/
+
+# 🔧 IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 🗂️ OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 🔐 Security
+.env
+.env.production
+
+# 🚀 CI/CD
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+
+# 🐳 Docker
+Dockerfile*
+docker-compose*
+.dockerignore 

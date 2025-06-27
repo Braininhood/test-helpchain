@@ -1,0 +1,63 @@
+name: 🚀 Build Frontend
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'backend/**'
+      - '*.md'
+      - '.gitignore'
+
+jobs:
+  # 🏗️ Build and Test Frontend
+  build-frontend:
+    name: 🎨 Build Frontend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          
+      - name: 📥 Install dependencies
+        run: npm ci
+        
+      - name: 🔍 Run linting
+        run: npm run lint
+        
+      - name: 🧪 Run type check
+        run: npm run type-check
+        
+      - name: 🏗️ Build Next.js application
+        run: npm run build
+        env:
+          NODE_ENV: production
+          
+      - name: 📊 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: .next/
+          retention-days: 7
+
+  # 📢 Build Notification
+  notify:
+    name: 📢 Notify Build
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: 📢 Build status
+        run: |
+          if [ "${{ needs.build-frontend.result }}" == "success" ]; then
+            echo "✅ Frontend build completed successfully!"
+          else
+            echo "❌ Frontend build failed!"
+            exit 1
+          fi 

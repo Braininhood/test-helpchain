@@ -62,6 +62,8 @@ export default function WhatWeDo() {
                 <Image
                   src={`${card.image}`}
                   alt={card.title}
+                  width={400}
+                  height={300}
                   className="w-full h-full object-cover rounded-lg "
                 />
                 <div className="absolute bottom-3 left-3 bg-white text-primary-400 p-2 rounded flex items-center gap-1 text-sm font-extrabold font-montserrat">

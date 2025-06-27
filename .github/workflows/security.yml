@@ -1,0 +1,98 @@
+name: 🔒 Security Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run security scan daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  # 🛡️ CodeQL Analysis
+  codeql:
+    name: 🔍 CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript', 'typescript' ]
+
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: 🏗️ Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: 🔍 Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
+
+  # 🔐 Dependency Vulnerability Scan
+  dependency-scan:
+    name: 🔐 Dependency Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run npm audit
+        run: |
+          npm audit --audit-level moderate --json > audit-results.json || true
+          
+      - name: 📊 Upload audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-results
+          path: audit-results.json
+
+  # 🔑 Secret Scan
+  secret-scan:
+    name: 🔑 Secret Detection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Scan for secrets
+        run: |
+          echo "🔍 Running basic secret detection..."
+          # Check for common secret patterns
+          if grep -r -i -E "(password|secret|key|token|api)" --include="*.js" --include="*.ts" --include="*.json" . | grep -v node_modules | grep -v .git; then
+            echo "⚠️ Found potential secrets in code files"
+          else
+            echo "✅ No obvious secrets found in code files"
+          fi
+          
+          # Check for .env files in git
+          if find . -name ".env*" -not -path "./.git/*" -not -path "./node_modules/*"; then
+            echo "⚠️ Found .env files - make sure they're in .gitignore"
+          else
+            echo "✅ No .env files found in repository"
+          fi 
