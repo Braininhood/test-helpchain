@@ -34,13 +34,26 @@ jobs:
         run: |
           npm run lint
           
+      - name: 🧪 Run type check
+        run: |
+          npm run type-check
+          
+      - name: 🧪 Run tests
+        run: |
+          npm run test:coverage
+          
+      - name: 📊 Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: matrix.node-version == '20.x'
+        with:
+          file: ./coverage/lcov.info
+          flags: frontend
+          name: frontend-coverage
+          fail_ci_if_error: false
+          
       - name: 🏗️ Build application
         run: |
           npm run build
-          
-      - name: 🧪 Run type check
-        run: |
-          npx tsc --noEmit
           
       - name: 📊 Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -87,4 +100,24 @@ jobs:
         
       - name: 🔍 Analyze dependencies
         uses: actions/dependency-review-action@v4
-        if: github.event_name == 'pull_request' 
+        if: github.event_name == 'pull_request'
+
+  # 🎯 Quality Gate
+  quality-gate:
+    name: 🎯 Quality Gate
+    needs: [frontend-ci, security-audit]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: 📊 Check quality gate
+        run: |
+          if [ "${{ needs.frontend-ci.result }}" != "success" ]; then
+            echo "❌ Frontend CI failed"
+            exit 1
+          fi
+          if [ "${{ needs.security-audit.result }}" != "success" ]; then
+            echo "❌ Security audit failed"
+            exit 1
+          fi
+          echo "✅ All quality checks passed!" 
