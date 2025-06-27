@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
+import { screen } from '@testing-library/dom'
 import Header from '../Header'
 
 describe('Header Component', () => {
@@ -19,7 +20,8 @@ describe('Header Component', () => {
 
   it('has login and join buttons', () => {
     render(<Header />)
-    expect(screen.getByText('Login')).toBeInTheDocument() // Desktop version
-    expect(screen.getAllByText('Join us')).toHaveLength(2) // Mobile and desktop visible
+    expect(screen.getByText('Login')).toBeInTheDocument()
+    // There are multiple "Join us" buttons (mobile and desktop)
+    expect(screen.getAllByText('Join us')).toHaveLength(2)
   })
 }) 
